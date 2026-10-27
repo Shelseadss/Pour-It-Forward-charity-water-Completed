@@ -1,0 +1,337 @@
+:root {
+  --charity-yellow: #ffc907;
+  --water-blue: #003366;
+  --water-teal: #77a8bb;
+  --warm-white: #fff7e1;
+  --charcoal: #1a1a1a;
+  --burnt-orange: #bf6c46;
+  --faded: #cbccd1;
+  --card-shadow: 0 0.75rem 2rem rgba(26, 26, 26, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background: var(--warm-white);
+  color: var(--charcoal);
+  font-family: "Nunito Sans", sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  margin-top: 0;
+  color: var(--water-blue);
+  font-family: "Libre Baskerville", serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+p {
+  line-height: 1.6;
+}
+
+.screen {
+  min-height: 100vh;
+  padding: 2rem 1rem;
+}
+
+.page-container {
+  width: min(100%, 70rem);
+  margin: 0 auto;
+  margin-top: 6rem;
+}
+
+.page-container h1 {
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 2.5rem;
+}
+
+.Logo-Placeholder-Top, .Logo-Placeholder-Bottom {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background: #fff;
+  border: 3px solid var(--charity-yellow);
+  box-shadow: var(--card-shadow);
+}
+
+.map-card {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 2rem;
+}
+ /*
+.eyebrow {
+  margin: 0 0 0.5rem;
+  color: var(--water-blue);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}*/
+
+.level-map {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.level-map-button {
+  min-height: 8rem;
+  padding: 1rem;
+  color: var(--charcoal);
+  text-align: left;
+  border: 2px solid var(--faded);
+  background: var(--warm-white);
+  cursor: pointer;
+  font: inherit;
+}
+
+.level-map-button:hover,
+.level-map-button:focus-visible {
+  border-color: var(--charity-yellow);
+}
+
+.level-map-button.unlocked {
+  border-color: var(--water-teal);
+}
+
+.level-map-button.completed {
+  border-color: var(--water-blue);
+  background: #e7f3f6;
+}
+
+.level-map-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.level-map-button span {
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.level-map-status {
+  margin-top: 0.5rem !important;
+  color: var(--water-blue);
+  font-weight: 700;
+}
+
+.gameplay-screen {
+  display: none;
+}
+
+.game-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.game-header h1 {
+  margin-bottom: 0;
+}
+
+.status-list {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.status-item {
+  min-width: 7rem;
+  padding: 0.75rem;
+  text-align: center;
+  border: 1px solid var(--faded);
+  font-weight: 700;
+}
+
+.game-layout {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) minmax(18rem, 45rem) minmax(8rem, 1fr);
+  gap: 2rem;
+  align-items: center;
+}
+
+.endpoint {
+  padding: 1rem;
+  color: var(--water-blue);
+  text-align: center;
+  border: 2px solid var(--water-teal);
+  font-weight: 700;
+}
+
+.puzzle-board {
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px solid var(--water-blue);
+}
+
+#puzzle-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--board-columns), minmax(0, 1fr));
+}
+
+.pipe-cell {
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 1px solid var(--faded);
+  background: #fff;
+  color: var(--water-blue);
+  cursor: pointer;
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  line-height: 1;
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+
+.pipe-cell:disabled {
+  cursor: default;
+}
+
+.pipe-cell.connected {
+  background: var(--water-teal);
+}
+
+.game-feedback {
+  margin: 2rem auto 0;
+  text-align: center;
+}
+
+.game-feedback p {
+  margin: 0.5rem 0;
+}
+
+.win-message {
+  color: var(--water-blue);
+  font-weight: 700;
+}
+
+.lose-message {
+  color: var(--burnt-orange);
+  font-weight: 700;
+}
+
+.game-actions,
+.start-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.button {
+  flex: 1 1 12rem;
+  min-height: 2.75rem;
+  padding: 0.7rem 1rem;
+  border: 2px solid transparent;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.button-primary {
+  border-color: var(--water-blue);
+  background: var(--water-blue);
+  color: #fff;
+}
+
+.button-secondary {
+  border-color: var(--faded);
+  background: transparent;
+  color: var(--charcoal);
+}
+
+.button:hover,
+.button:focus-visible {
+  border-color: var(--charity-yellow);
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+.start-screen {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgba(255, 247, 225, 0.88);
+  z-index: 20;
+}
+
+.start-card {
+  width: min(100%, 28rem);
+  padding: 2.5rem 2rem;
+  text-align: center;
+}
+
+.start-card h2 {
+  margin-top: 2rem;
+  font-size: 1.25rem;
+}
+
+.level-details {
+  color: var(--water-blue);
+  font-weight: 700;
+}
+
+.confetti-container {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 30;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -1rem;
+  width: 0.65rem;
+  height: 1rem;
+  animation: fall-and-spin linear forwards;
+}
+
+@keyframes fall-and-spin {
+  to {
+    transform: translateY(110vh) rotate(720deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .game-header {
+    display: block;
+  }
+
+  .status-list {
+    margin-top: 1rem;
+  }
+
+  .game-layout {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .endpoint {
+    order: 0;
+  }
+
+  .puzzle-board {
+    order: 1;
+  }
+
+  .water-fountain {
+    order: 2;
+  }
+}

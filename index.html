@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pour It Forward | Gameplay</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400..700;1,400..700&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main>
+    <!-- The map is the first screen and is populated from the level data. -->
+    <section id="map-screen" class="screen map-screen" aria-labelledby="map-title">
+      <div class="page-container">
+        <h1>Pour It Forward</h1>
+        <div class="Logo-Placeholder-Top">
+          <img src="images/logo.png" alt="charity: water Logo" />
+        </div>
+        <div class="card map-card">
+          <h2 id="map-title">Choose a Level</h2>
+          <p>Connect the pipes and bring clean water to each community.</p>
+          <div id="level-map" class="level-map" aria-label="Level map"></div>
+        </div>
+        <div class="Logo-Placeholder-Bottom">
+          <img src="images/logo.png" alt="charity: water Partner Logo" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Gameplay contains only structure; JavaScript creates the pipe tiles. -->
+    <section id="gameplay-screen" class="screen gameplay-screen" aria-labelledby="level-title">
+      <div class="page-container">
+        <header class="game-header">
+          <div>
+            <p id="level-location" class="eyebrow"></p>
+            <h1 id="level-title"></h1>
+          </div>
+          <div class="status-list" aria-label="Game status">
+            <span id="level-progress" class="status-item"></span>
+            <span id="timer" class="status-item"></span>
+          </div>
+        </header>
+
+        <div class="game-layout">
+          <div class="endpoint water-source">Water Source</div>
+          <div class="puzzle-board">
+            <div id="puzzle-grid" aria-label="Pipe puzzle board"></div>
+          </div>
+          <div class="endpoint water-fountain">Community Fountain</div>
+        </div>
+
+        <div class="game-feedback">
+          <p id="score">Score: 0</p>
+          <p id="game-message" role="status" aria-live="polite">
+            Tap or click a pipe to rotate it and connect the water.
+          </p>
+        </div>
+
+        <nav class="game-actions" aria-label="Level controls">
+          <button id="back-to-map-button" class="button button-secondary" type="button">Back to Map</button>
+          <button id="restart-button" class="button button-primary" type="button">Restart Level</button>
+          <button id="next-level-button" class="button button-primary is-hidden" type="button">Next Level</button>
+        </nav>
+      </div>
+    </section>
+
+    <!-- This overlay keeps the board visible while preventing early interaction. -->
+    <section id="start-screen" class="start-screen" aria-labelledby="start-title">
+      <div class="card start-card">
+        <p id="start-location" class="eyebrow"></p>
+        <h1 id="start-title"></h1>
+        <p id="start-description"></p>
+        <p id="start-difficulty" class="level-details"></p>
+        <h2>Start Level?</h2>
+        <div class="start-actions">
+          <button id="start-button" class="button button-primary" type="button">Start Level</button>
+          <button id="start-back-to-map-button" class="button button-secondary" type="button">Back to Map</button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
