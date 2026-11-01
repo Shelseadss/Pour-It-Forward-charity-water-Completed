@@ -15,16 +15,16 @@
     <section id="map-screen" class="screen map-screen" aria-labelledby="map-title">
       <div class="page-container">
         <h1>Pour It Forward</h1>
+        <p>Connect the pipes and bring clean water to each community.</p>
         <div class="Logo-Placeholder-Top">
-          <img src="images/logo.png" alt="charity: water Logo" />
+          <img src="images/logos/full_logo.png" alt="charity: water Logo" width="300" />
         </div>
+        <h2 id="map-title">Choose a Level</h2>
         <div class="card map-card">
-          <h2 id="map-title">Choose a Level</h2>
-          <p>Connect the pipes and bring clean water to each community.</p>
           <div id="level-map" class="level-map" aria-label="Level map"></div>
         </div>
         <div class="Logo-Placeholder-Bottom">
-          <img src="images/logo.png" alt="charity: water Partner Logo" />
+          <img src="images/logos/long_lockup_partner_right.png" alt="charity: water Partner Logo" width="300" />
         </div>
       </div>
     </section>
@@ -33,22 +33,26 @@
     <section id="gameplay-screen" class="screen gameplay-screen" aria-labelledby="level-title">
       <div class="page-container">
         <header class="game-header">
-          <div>
+          <span id="level-progress" class="status-item"></span>
+          <div class="game-title">
             <p id="level-location" class="eyebrow"></p>
             <h1 id="level-title"></h1>
           </div>
-          <div class="status-list" aria-label="Game status">
-            <span id="level-progress" class="status-item"></span>
-            <span id="timer" class="status-item"></span>
-          </div>
+          <span id="timer" class="status-item"></span>
         </header>
 
         <div class="game-layout">
+          <!-- Placeholder: replace with the water source artwork later. -->
+          <!--
           <div class="endpoint water-source">Water Source</div>
+          -->
           <div class="puzzle-board">
             <div id="puzzle-grid" aria-label="Pipe puzzle board"></div>
           </div>
+          <!-- Placeholder: replace with the community fountain artwork later. -->
+          <!--
           <div class="endpoint water-fountain">Community Fountain</div>
+          -->
         </div>
 
         <div class="game-feedback">
@@ -66,10 +70,19 @@
       </div>
     </section>
 
+    <!-- A compact footer keeps the charity: water links available on every screen. -->
+    <footer class="site-footer">
+      <p>Learn more about clean water access:</p>
+      <nav aria-label="charity: water links">
+        <a href="https://www.charitywater.org/" target="_blank" rel="noopener noreferrer">charity: water</a>
+        <a href="https://www.charitywater.org/donate" target="_blank" rel="noopener noreferrer">Donate</a>
+      </nav>
+    </footer>
+
     <!-- This overlay keeps the board visible while preventing early interaction. -->
     <section id="start-screen" class="start-screen" aria-labelledby="start-title">
       <div class="card start-card">
-        <p id="start-location" class="eyebrow"></p>
+        <h3 id="start-location" class="eyebrow"></h3>
         <h1 id="start-title"></h1>
         <p id="start-description"></p>
         <p id="start-difficulty" class="level-details"></p>
@@ -81,6 +94,16 @@
       </div>
     </section>
   </main>
+  <audio id="pipe-rotate-sound" preload="auto">
+    <source src="sounds/698136__alexdarek__metal-click.wav" type="audio/wav">
+  </audio>
+  <audio id="level-music" preload="auto" loop></audio>
+  <audio id="map-music" preload="auto" loop>
+    <source src="sounds/494704__z-dart__african-choir-with-percussion-playing-outdoors.wav" type="audio/wav">
+  </audio>
+  <audio id="level-complete-sound" preload="auto">
+    <source src="sounds/274183__littlerobotsoundfactory__jingle_win_synth_04.wav" type="audio/wav">
+  </audio>
   <script src="script.js"></script>
 </body>
 </html>

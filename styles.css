@@ -7,6 +7,7 @@
   --burnt-orange: #bf6c46;
   --faded: #cbccd1;
   --card-shadow: 0 0.75rem 2rem rgba(26, 26, 26, 0.12);
+  --level-accent: var(--charity-yellow);
 }
 
 * {
@@ -27,8 +28,9 @@ h3 {
   margin-top: 0;
   color: var(--water-blue);
   font-family: "Libre Baskerville", serif;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.025em;
   text-transform: uppercase;
+  margin-bottom: 0;
 }
 
 p {
@@ -37,19 +39,36 @@ p {
 
 .screen {
   min-height: 100vh;
-  padding: 2rem 1rem;
+  padding: 2.5rem 1rem;
 }
 
 .page-container {
   width: min(100%, 70rem);
   margin: 0 auto;
-  margin-top: 6rem;
 }
 
 .page-container h1 {
-  margin-bottom: 2rem;
   text-align: center;
-  font-size: 2.5rem;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+}
+
+.page-container h2 {
+  text-align: center;
+  font-size: 1.75rem;
+  background: var(--charity-yellow);
+  border: 2px solid var(--charity-yellow);
+  width: fit-content;
+  margin: auto;
+  margin-bottom: 0px;
+  padding: 0.5rem 1rem;
+  color: #fff;
+  border-radius: 1.5rem;
+}
+
+.page-container p{
+  text-align: center;
+  font-size: clamp(1rem, 2.5vw, 1.35rem);
+  margin: 0;
 }
 
 .Logo-Placeholder-Top, .Logo-Placeholder-Bottom {
@@ -60,16 +79,27 @@ p {
 }
 
 .card {
-  background: #fff;
-  border: 3px solid var(--charity-yellow);
+  background: rgba(255, 247, 225, 0.9);
   box-shadow: var(--card-shadow);
+  border: 0.2rem solid var(--charity-yellow);
+  border-radius: 1.5rem;
+  width: 100%;
 }
 
 .map-card {
   max-width: 52rem;
   margin: 0 auto;
   padding: 2rem;
+  background: rgba(255, 247, 225, 0.9);
 }
+
+.level-map{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
  /*
 .eyebrow {
   margin: 0 0 0.5rem;
@@ -80,26 +110,39 @@ p {
 }*/
 
 .level-map {
+  height: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  margin: 0 auto;
   gap: 1rem;
-  margin-top: 2rem;
 }
 
 .level-map-button {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "number heading"
+    "number description"
+    "number meta"
+    "number status";
+  align-items: center;
   min-height: 8rem;
   padding: 1rem;
   color: var(--charcoal);
   text-align: left;
-  border: 2px solid var(--faded);
+  border: 0.15rem solid rgba(0, 51, 102, 0.18);
+  border-radius: 1rem;
   background: var(--warm-white);
   cursor: pointer;
   font: inherit;
+  transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
 }
 
 .level-map-button:hover,
 .level-map-button:focus-visible {
-  border-color: var(--charity-yellow);
+  border-color: var(--level-accent);
+  box-shadow: 0 0.6rem 1rem rgba(0, 51, 102, 0.16);
+  transform: translateY(-0.2rem);
 }
 
 .level-map-button.unlocked {
@@ -107,8 +150,8 @@ p {
 }
 
 .level-map-button.completed {
+  background: white;
   border-color: var(--water-blue);
-  background: #e7f3f6;
 }
 
 .level-map-button:disabled {
@@ -121,45 +164,136 @@ p {
   margin-top: 0.25rem;
 }
 
+.level-number {
+  grid-area: number;
+  display: grid !important;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0 1rem 0 0 !important;
+  border-radius: 50%;
+  background: var(--level-accent);
+  color: var(--water-blue);
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+
+.level-card-heading {
+  grid-area: heading;
+  margin: 0 !important;
+}
+
+.level-card-heading strong {
+  display: block;
+  color: var(--water-blue);
+  font-family: "Libre Baskerville", serif;
+  font-size: 1.15rem;
+}
+
+.level-location {
+  margin: 0 !important;
+  color: var(--water-blue);
+  font-size: 1.2rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.level-description {
+  grid-area: description;
+  margin-top: 0.35rem !important;
+  font-size: 0.95rem;
+}
+
+.level-meta {
+  grid-area: meta;
+  color: var(--water-blue);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
 .level-map-status {
+  grid-area: status;
   margin-top: 0.5rem !important;
   color: var(--water-blue);
+  font-size: 0.8rem;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
+
 
 .gameplay-screen {
   display: none;
+  --level-accent: var(--charity-yellow);
+  background-image:
+    linear-gradient(rgba(255, 247, 225, 0.72), rgba(255, 247, 225, 0.72)),
+    url("images/Blue Water Meets Golden Shoreline.png");
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+.gameplay-screen[data-level="2"],
+.start-screen[data-level="2"] {
+  --level-accent: var(--water-teal);
+}
+
+.gameplay-screen[data-level="3"],
+.start-screen[data-level="3"] {
+  --level-accent: #2f9ed6;
 }
 
 .game-header {
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  display: grid;
+  grid-template-columns: minmax(7rem, 1fr) auto minmax(7rem, 1fr);
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.game-header > :first-child {
+  justify-self: start;
+}
+
+.game-title {
+  text-align: center;
 }
 
 .game-header h1 {
   margin-bottom: 0;
+  font-size: clamp(1.7rem, 4vw, 2.8rem);
+  text-transform: none;
 }
 
-.status-list {
-  display: flex;
-  gap: 0.75rem;
+.game-header > :last-child {
+  justify-self: end;
 }
 
 .status-item {
-  min-width: 7rem;
-  padding: 0.75rem;
+  min-width: 5.5rem;
+  padding: 0.55rem 0.8rem;
+  border: 0.15rem solid var(--level-accent);
+  border-radius: 999px;
+  background: var(--water-blue);
+  color: #fff;
+  font-size: 0.9rem;
   text-align: center;
-  border: 1px solid var(--faded);
   font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+#timer.timer-warning {
+  border-color: var(--burnt-orange);
+  background: var(--burnt-orange);
+  animation: timer-pulse 800ms ease-in-out infinite alternate;
 }
 
 .game-layout {
   display: grid;
-  grid-template-columns: minmax(8rem, 1fr) minmax(18rem, 45rem) minmax(8rem, 1fr);
-  gap: 2rem;
+  grid-template-columns: minmax(18rem, 45rem);
+  gap: 0;
+  justify-content: center;
   align-items: center;
 }
 
@@ -172,9 +306,11 @@ p {
 }
 
 .puzzle-board {
+  position: relative;
   width: 100%;
-  padding: 0.5rem;
-  border: 2px solid var(--water-blue);
+  border: 0.45rem solid var(--water-blue);
+  border-radius: 1rem;
+  box-shadow: 0 1rem 2rem rgba(0, 51, 102, 0.25), inset 0 0 0 0.2rem rgba(255, 255, 255, 0.35);
 }
 
 #puzzle-grid {
@@ -183,16 +319,43 @@ p {
 }
 
 .pipe-cell {
+  position: relative;
   width: 100%;
   aspect-ratio: 1;
+  min-width: 2rem;
+  min-height: 2rem;
   padding: 0;
-  border: 1px solid var(--faded);
-  background: #fff;
+  border: 0;
+  background: rgba(255, 255, 255, 0.18);
   color: var(--water-blue);
   cursor: pointer;
   font-size: clamp(1.5rem, 4vw, 3rem);
   line-height: 1;
   transition: background-color 150ms ease, transform 150ms ease;
+  overflow: visible;
+}
+
+.pipe-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: 110%;
+  height: 110%;
+  object-fit: contain;
+  transform-origin: center;
+  transition: transform 150ms ease;
+  z-index: 1;
+}
+
+.pipe-image-straight {
+  width: 110%;
+  height: 110%;
+}
+
+.pipe-image-elbow {
+  width: 60%;
+  height: 60%;
 }
 
 .pipe-cell:disabled {
@@ -200,16 +363,55 @@ p {
 }
 
 .pipe-cell.connected {
-  background: var(--water-teal);
+  background: rgba(42, 151, 207, 0.42);
+  box-shadow: inset 0 0 1rem rgba(110, 220, 255, 0.35);
+}
+
+.pipe-cell.just-connected {
+  animation: connected-pulse 650ms ease-out;
+}
+
+.water-drop {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50% 50% 50% 0;
+  background: #2f9ed6;
+  pointer-events: none;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  animation: water-drop-pop 700ms ease-out forwards;
+}
+
+@keyframes water-drop-pop {
+  to {
+    opacity: 0;
+    transform: translate(-50%, -125%) rotate(-45deg) scale(1.35);
+  }
 }
 
 .game-feedback {
-  margin: 2rem auto 0;
+  width: min(100%, 45rem);
+  margin: 0.75rem auto 0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 0.15rem solid rgba(0, 51, 102, 0.14);
+  background: rgba(255, 247, 225, 0.88);
   text-align: center;
 }
 
 .game-feedback p {
   margin: 0.5rem 0;
+}
+
+#score {
+  display: inline-block;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: var(--level-accent);
+  color: var(--water-blue);
+  font-weight: 900;
 }
 
 .win-message {
@@ -227,7 +429,8 @@ p {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-top: 2rem;
+  width: min(100%, 45rem);
+  margin: 0.75rem auto 0;
 }
 
 .button {
@@ -235,9 +438,11 @@ p {
   min-height: 2.75rem;
   padding: 0.7rem 1rem;
   border: 2px solid transparent;
+  border-radius: 999px;
   cursor: pointer;
   font: inherit;
   font-weight: 700;
+  transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
 }
 
 .button-primary {
@@ -255,10 +460,45 @@ p {
 .button:hover,
 .button:focus-visible {
   border-color: var(--charity-yellow);
+  box-shadow: 0 0.4rem 0.8rem rgba(0, 51, 102, 0.2);
+  transform: translateY(-0.1rem);
+}
+
+.button:active {
+  transform: translateY(0);
 }
 
 .is-hidden {
   display: none !important;
+}
+
+.site-footer {
+  max-width: 70rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 2rem;
+  color: var(--water-blue);
+  text-align: center;
+}
+
+.site-footer p {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.site-footer nav {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.site-footer a {
+  color: var(--water-blue);
+  font-weight: 700;
+}
+
+.site-footer a:hover,
+.site-footer a:focus-visible {
+  color: var(--burnt-orange);
 }
 
 .start-screen {
@@ -275,6 +515,8 @@ p {
   width: min(100%, 28rem);
   padding: 2.5rem 2rem;
   text-align: center;
+  border-top: 0.45rem solid var(--level-accent);
+  box-shadow: 0 1.25rem 3rem rgba(0, 51, 102, 0.24);
 }
 
 .start-card h2 {
@@ -282,9 +524,37 @@ p {
   font-size: 1.25rem;
 }
 
+#start-description{
+  margin:auto;
+  font-size: 1rem;
+  width:70%;
+}
+
+#start-difficulty{
+  margin:0;
+  font-size: 1.5rem;
+}
+
+#start-location{
+  color: var(--water-blue);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+#start-back-to-map-button{
+  background-color: white;
+  border-color: var(--faded);
+}
+
 .level-details {
   color: var(--water-blue);
   font-weight: 700;
+}
+
+.level-details h2{
+  margin: 0;
+  font-size: 1.25rem;
+
 }
 
 .confetti-container {
@@ -309,13 +579,44 @@ p {
   }
 }
 
+@keyframes connected-pulse {
+  50% {
+    filter: brightness(1.2);
+    box-shadow: inset 0 0 1.5rem rgba(110, 220, 255, 0.7);
+  }
+}
+
+@keyframes timer-pulse {
+  to {
+    box-shadow: 0 0 1rem rgba(191, 108, 70, 0.55);
+  }
+}
+
 @media (max-width: 768px) {
   .game-header {
-    display: block;
+    grid-template-areas:
+      "title title"
+      "progress timer";
+    grid-template-columns: 1fr 1fr;
+    text-align: center;
   }
 
-  .status-list {
-    margin-top: 1rem;
+  .status-item {
+    min-width: 7rem;
+  }
+
+  .game-header > #level-progress {
+    grid-area: progress;
+    justify-self: center;
+  }
+
+  .game-title {
+    grid-area: title;
+  }
+
+  .game-header > #timer {
+    grid-area: timer;
+    justify-self: center;
   }
 
   .game-layout {
@@ -333,5 +634,13 @@ p {
 
   .water-fountain {
     order: 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .pipe-cell {
+    min-width: 0;
+    min-height: 0;
+    font-size: clamp(1rem, 5vw, 2rem);
   }
 }

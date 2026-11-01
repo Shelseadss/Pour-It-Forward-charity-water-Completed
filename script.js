@@ -11,6 +11,67 @@ Initially connected tiles do not award points before the player makes a move.
 
 */
 
+// Build the Advanced board from one continuous snake path, then rotate each
+// piece so the player must solve it instead of seeing the completed solution.
+function createAdvancedTiles() {
+  const columns = 7;
+  const rows = 4;
+  const path = [];
+  const directionNames = ["top", "right", "bottom", "left"];
+  const directionOffsets = {
+    top: [-1, 0],
+    right: [0, 1],
+    bottom: [1, 0],
+    left: [0, -1]
+  };
+  const clockwise = {
+    top: "right",
+    right: "bottom",
+    bottom: "left",
+    left: "top"
+  };
+
+  for (let row = 0; row < rows; row += 1) {
+    const columnOrder = row % 2 === 0
+      ? [...Array(columns).keys()]
+      : [...Array(columns).keys()].reverse();
+    columnOrder.forEach((column) => path.push([row, column]));
+  }
+
+  return path.map(([row, column], index) => {
+    const connections = [];
+    const previous = path[index - 1];
+    const next = path[index + 1];
+
+    [previous, next].forEach((neighbor) => {
+      if (!neighbor) {
+        return;
+      }
+
+      const rowChange = neighbor[0] - row;
+      const columnChange = neighbor[1] - column;
+      const direction = directionNames.find((name) => {
+        const [expectedRowChange, expectedColumnChange] = directionOffsets[name];
+        return rowChange === expectedRowChange && columnChange === expectedColumnChange;
+      });
+
+      connections.push(direction);
+    });
+
+    // Alternate rotations keep the solution hidden while preserving the path.
+    const rotationCount = index % 2;
+    return {
+      connections: connections.map((connection) => {
+        let rotated = connection;
+        for (let rotation = 0; rotation < rotationCount; rotation += 1) {
+          rotated = clockwise[rotated];
+        }
+        return rotated;
+      })
+    };
+  });
+}
+
 const levels = [
   {
     id: 1,
@@ -23,6 +84,7 @@ const levels = [
     rows: 4,
     startTile: 1,
     goalTile: 24,
+    music: "sounds/253617__rtb45__pakacaping-music-2-makassar-indonesia.wav",
     tiles: [
       { connections: ["left", "right"] },
       { connections: ["left", "right"] },
@@ -55,12 +117,13 @@ const levels = [
     location: "Nairobi",
     description: "Connect the pipes to bring water to the community.",
     difficulty: "Intermediate",
-    timeLimit: 35,
-    scoreMultiplier: 1.2,
+    timeLimit: 20,
+    scoreMultiplier: 1.5,
     columns: 6,
     rows: 4,
     startTile: 1,
     goalTile: 24,
+    music: "sounds/198491__peridactyloptrix__african-tribal-drums-beat-1.wav",
     tiles: [
       { connections: ["left", "right"] },
       { connections: ["top", "bottom"] },
@@ -87,6 +150,20 @@ const levels = [
       { connections: ["left", "top"] },
       { connections: ["right", "top"] },
     ]
+  },
+  {
+    id: 3,
+    location: "Kampala",
+    description: "Navigate a larger network and deliver water before time runs out.",
+    difficulty: "Advanced",
+    timeLimit: 15,
+    scoreMultiplier: 2,
+    columns: 7,
+    rows: 4,
+    startTile: 1,
+    goalTile: 28,
+    music: "sounds/494704__z-dart__african-choir-with-percussion-playing-outdoors.wav",
+    tiles: createAdvancedTiles()
   }
 ];
 
@@ -121,7 +198,11 @@ const elements = {
   startTitle: document.querySelector("#start-title"),
   startDescription: document.querySelector("#start-description"),
   startDifficulty: document.querySelector("#start-difficulty"),
-  nextLevelButton: document.querySelector("#next-level-button")
+  nextLevelButton: document.querySelector("#next-level-button"),
+  pipeRotateSound: document.querySelector("#pipe-rotate-sound"),
+  levelMusic: document.querySelector("#level-music"),
+  mapMusic: document.querySelector("#map-music"),
+  levelCompleteSound: document.querySelector("#level-complete-sound")
 };
 
 const directions = {
@@ -139,6 +220,10 @@ const clockwiseDirection = {
 };
 
 const pipeSymbols = {
+  top: "╵",
+  right: "╴",
+  bottom: "╷",
+  left: "╶",
   "left right": "─",
   "top bottom": "│",
   "right bottom": "┌",
@@ -210,11 +295,13 @@ function renderLevelMap() {
     button.className = `level-map-button ${status.toLowerCase()}`;
     button.disabled = !isUnlocked;
     button.innerHTML = `
-      <strong>Level ${level.id}</strong>
-      <span>${level.location}</span>
-      <span>${level.description}</span>
-      <span>${level.difficulty} · ${level.timeLimit}s</span>
-      <span>${level.scoreMultiplier}× score</span>
+      <span class="level-number">${level.id}</span>
+      <span class="level-card-heading">
+        <strong>Level ${level.id}</strong>
+        <span class="level-location">${level.location}</span>
+      </span>
+      <span class="level-description">${level.description}</span>
+      <span class="level-meta">${level.difficulty} · ${level.timeLimit}s · ${level.scoreMultiplier}× score</span>
       <span class="level-map-status">${status}</span>
     `;
 
@@ -235,10 +322,72 @@ function updateLevelDetails(level) {
   elements.startDescription.textContent = level.description;
   elements.startDifficulty.textContent =
     `${level.difficulty} · ${level.timeLimit} seconds · ${level.scoreMultiplier}× score`;
+  elements.gameplayScreen.dataset.level = String(level.id);
+  elements.startScreen.dataset.level = String(level.id);
 }
 
 function getPipeSymbol(connections) {
-  return pipeSymbols[connections.join(" ")] || "?";
+  // Canonical ordering lets generated tiles render even when their path
+  // neighbors were discovered in the opposite direction.
+  const directionOrder = ["left", "right", "top", "bottom"];
+  const key = directionOrder.filter((direction) => connections.includes(direction)).join(" ");
+  return pipeSymbols[key] || "?";
+}
+
+function getPipeAsset(connections) {
+  const connectionSet = new Set(connections);
+  const isStraight = connectionSet.has("left") && connectionSet.has("right")
+    || connectionSet.has("top") && connectionSet.has("bottom");
+  const isElbow = connections.length === 2 && !isStraight;
+
+  if (isStraight) {
+    return {
+      source: "images/straight_pipe_game_ready.png",
+      rotation: connectionSet.has("top") ? 90 : 0,
+      type: "straight"
+    };
+  }
+
+  if (isElbow) {
+    const key = connections.slice().sort().join(" ");
+    const rotations = {
+      "right top": 0,
+      "bottom right": 90,
+      "bottom left": 180,
+      "left top": 270
+    };
+    return {
+      source: "images/elbow_pipe_game_ready.png",
+      rotation: rotations[key],
+      type: "elbow"
+    };
+  }
+
+  return null;
+}
+
+function updateTileVisual(tileState, tileElement) {
+  const image = tileElement.querySelector("img");
+  const asset = getPipeAsset(tileState.connections);
+
+  if (!asset) {
+    tileElement.textContent = getPipeSymbol(tileState.connections);
+    return;
+  }
+
+  if (!image) {
+    tileElement.replaceChildren();
+    const pipeImage = document.createElement("img");
+    pipeImage.alt = "";
+    pipeImage.setAttribute("aria-hidden", "true");
+    tileElement.appendChild(pipeImage);
+  }
+
+  const pipeImage = tileElement.querySelector("img");
+  pipeImage.className = `pipe-image pipe-image-${asset.type}`;
+  pipeImage.src = asset.source;
+  pipeImage.style.transform =
+    `translate(-50%, -50%) rotate(${asset.rotation}deg)`;
 }
 
 function renderBoard(level) {
@@ -270,7 +419,7 @@ function renderBoard(level) {
     tile.disabled = true;
     tile.dataset.tile = String(tileState.number);
     tile.setAttribute("aria-label", `Pipe tile ${tileState.number}`);
-    tile.textContent = getPipeSymbol(tileState.connections);
+    updateTileVisual(tileState, tile);
     elements.puzzleGrid.appendChild(tile);
   });
 }
@@ -278,6 +427,7 @@ function renderBoard(level) {
 function renderStatus() {
   elements.score.textContent = `Score: ${state.score}`;
   elements.timer.textContent = `Time: ${state.timeLeft}`;
+  elements.timer.classList.toggle("timer-warning", state.timeLeft <= 10);
 }
 
 function getTileElement(tileNumber) {
@@ -296,6 +446,17 @@ function getTileNumber(row, column) {
 
   const tileNumber = row * level.columns + column + 1;
   return tileNumber <= level.tiles.length ? tileNumber : null;
+}
+
+function showWaterDrop(tileNumber) {
+  const tile = getTileElement(tileNumber);
+  const drop = document.createElement("span");
+  drop.className = "water-drop";
+  drop.setAttribute("aria-hidden", "true");
+  tile.appendChild(drop);
+
+  // Remove completed effects so repeated moves do not grow the DOM forever.
+  window.setTimeout(() => drop.remove(), 700);
 }
 
 function findConnectedTiles() {
@@ -362,6 +523,7 @@ function updateConnectedStyles(shouldAwardPoints = false) {
       if (!state.scoredTiles.has(tileNumber)) {
         state.scoredTiles.add(tileNumber);
         state.score += Math.round(5 * level.scoreMultiplier);
+        showWaterDrop(tileNumber);
       }
     });
     renderStatus();
@@ -380,7 +542,15 @@ function updateConnectedStyles(shouldAwardPoints = false) {
     //   // Update this tile's connected style here.
     //   index += 1;
     // }
-    getTileElement(tile.number).classList.toggle("connected", connectedTiles.has(tile.number));
+    const tileElement = getTileElement(tile.number);
+    const wasConnected = tileElement.classList.contains("connected");
+    const isConnected = connectedTiles.has(tile.number);
+    tileElement.classList.toggle("connected", isConnected);
+    if (isConnected && !wasConnected) {
+      tileElement.classList.remove("just-connected");
+      window.requestAnimationFrame(() => tileElement.classList.add("just-connected"));
+      window.setTimeout(() => tileElement.classList.remove("just-connected"), 650);
+    }
   });
 
   if (connectedTiles.has(level.goalTile) && !state.hasWon) {
@@ -398,7 +568,11 @@ function rotateTile(tileNumber) {
   tileState.connections = tileState.connections.map(
     (connection) => clockwiseDirection[connection]
   );
-  tile.textContent = getPipeSymbol(tileState.connections);
+  updateTileVisual(tileState, tile);
+  elements.pipeRotateSound.currentTime = 0;
+  elements.pipeRotateSound.play().catch((error) => {
+    console.warn("Unable to play pipe rotation sound.", error);
+  });
   updateConnectedStyles(true);
 }
 
@@ -425,8 +599,50 @@ function stopTimer() {
   state.timerId = null;
 }
 
+function stopLevelMusic() {
+  elements.levelMusic.pause();
+  elements.levelMusic.currentTime = 0;
+}
+
+function stopMapMusic() {
+  elements.mapMusic.pause();
+  elements.mapMusic.currentTime = 0;
+}
+
+function playMapMusic() {
+  stopLevelMusic();
+  elements.mapMusic.volume = 0.25;
+  elements.mapMusic.play().catch((error) => {
+    if (error.name !== "NotAllowedError" && error.name !== "AbortError") {
+      console.warn("Unable to play level selection music.", error);
+    }
+  });
+}
+
+function playLevelMusic(level) {
+  stopMapMusic();
+  const musicSource = new URL(level.music, document.baseURI).href;
+  if (elements.levelMusic.src !== musicSource) {
+    elements.levelMusic.src = level.music;
+    elements.levelMusic.load();
+  }
+
+  elements.levelMusic.volume = 0.25;
+  elements.levelMusic.play().catch((error) => {
+    console.warn("Unable to play level music.", error);
+  });
+}
+
+function playLevelCompleteSound() {
+  elements.levelCompleteSound.currentTime = 0;
+  elements.levelCompleteSound.play().catch((error) => {
+    console.warn("Unable to play level completion sound.", error);
+  });
+}
+
 function endGame(message, won = false) {
   stopTimer();
+  stopLevelMusic();
   state.isPlaying = false;
   state.hasWon = won;
   elements.gameMessage.textContent = message;
@@ -435,6 +651,7 @@ function endGame(message, won = false) {
   setBoardEnabled(false);
 
   if (won) {
+    playLevelCompleteSound();
     state.score += Math.round(50 * getCurrentLevel().scoreMultiplier);
     renderStatus();
     launchConfetti();
@@ -461,12 +678,14 @@ function startLevel() {
   state.isPlaying = true;
   elements.startScreen.classList.add("is-hidden");
   setBoardEnabled(true);
+  playLevelMusic(getCurrentLevel());
   startTimer();
 }
 
 function resetLevel() {
   const level = getCurrentLevel();
   stopTimer();
+  stopLevelMusic();
   state.score = 0;
   state.timeLeft = level.timeLimit;
   state.hasWon = false;
@@ -491,7 +710,7 @@ function resetLevel() {
     // }
     tile.connections = [...tile.initialConnections];
     const element = getTileElement(tile.number);
-    element.textContent = getPipeSymbol(tile.connections);
+    updateTileVisual(tile, element);
     element.classList.remove("connected");
   });
 
@@ -499,11 +718,13 @@ function resetLevel() {
   state.scoredTiles = findConnectedTiles();
   updateConnectedStyles();
   setBoardEnabled(true);
+  playLevelMusic(level);
   startTimer();
 }
 
 function loadLevel(levelIndex, startImmediately = true) {
   stopTimer();
+  stopLevelMusic();
   state.levelIndex = levelIndex;
   state.score = 0;
   state.timeLeft = getCurrentLevel().timeLimit;
@@ -527,11 +748,19 @@ function loadLevel(levelIndex, startImmediately = true) {
 
 function showMap() {
   stopTimer();
+  stopLevelMusic();
   state.isPlaying = false;
   elements.mapScreen.style.display = "block";
   elements.gameplayScreen.style.display = "none";
   elements.startScreen.classList.add("is-hidden");
   renderLevelMap();
+  playMapMusic();
+}
+
+function resumeMapMusicAfterInteraction() {
+  if (elements.mapScreen.style.display !== "none" && elements.mapMusic.paused) {
+    playMapMusic();
+  }
 }
 
 function openLevel(levelIndex) {
@@ -540,6 +769,7 @@ function openLevel(levelIndex) {
     return;
   }
 
+  stopMapMusic();
   loadLevel(levelIndex, false);
   elements.mapScreen.style.display = "none";
   elements.gameplayScreen.style.display = "block";
@@ -579,6 +809,8 @@ document.querySelector("#start-button").addEventListener("click", startLevel);
 document.querySelector("#back-to-map-button").addEventListener("click", showMap);
 document.querySelector("#start-back-to-map-button").addEventListener("click", showMap);
 elements.nextLevelButton.addEventListener("click", () => loadLevel(state.levelIndex + 1));
+document.addEventListener("pointerdown", resumeMapMusicAfterInteraction, { once: true });
+document.addEventListener("keydown", resumeMapMusicAfterInteraction, { once: true });
 
 // Render the first board once, then show the map as the initial screen.
 loadLevel(0, false);
